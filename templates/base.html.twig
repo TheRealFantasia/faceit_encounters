@@ -1,0 +1,19 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+
+        <link href="https://fonts.googleapis.com/css2?family=Play&display=swap" rel="stylesheet">
+    </head>
+    <body>
+    <div data-user="{{ user|json_encode }}" id="app">
+        {% block body %}{% endblock %}
+    </div>
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+    {% endblock %}
+    </body>
+</html>
