@@ -1,27 +1,30 @@
 <template>
-    <div class="container">
-        <div class="columns is-centered">
-            <div class="column is-narrow">
-                <h1 class="title">
-                    Faceit Encounters
-                </h1>
-                <input class="input" type="text" v-model="input.faceitNickname" placeholder="Faceit Nickname" />
-                <a class="button is-primary" v-on:click="search()">Search</a>
-                <div v-if="isLoading">
-                    <span>Loading...</span>
-                </div>
-                <div v-if="!isInitial && !isLoading">
-                    <div v-if="model.playedWith">
-                        <span>You played with or against {{ input.searchedName }}</span>
-                        <br>
-                        <ul>
-                            <li v-for="match in model.matches">
-                                {{ match.team1 }} vs. {{ match.team2 }}
-                            </li>
-                        </ul>
+    <div>
+        <MainNavbar></MainNavbar>
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-narrow">
+                    <h1 class="title">
+                        Faceit Encounters
+                    </h1>
+                    <input class="input" type="text" v-model="input.faceitNickname" placeholder="Faceit Nickname" />
+                    <a class="button is-primary" v-on:click="search()">Search</a>
+                    <div v-if="isLoading">
+                        <span>Loading...</span>
                     </div>
-                    <div v-else>
-                        <span>You have not played with or against {{ input.searchedName }}</span>
+                    <div v-if="!isInitial && !isLoading">
+                        <div v-if="model.playedWith">
+                            <span>You played with or against {{ input.searchedName }}</span>
+                            <br>
+                            <ul>
+                                <li v-for="match in model.matches">
+                                    {{ match.team1 }} vs. {{ match.team2 }}
+                                </li>
+                            </ul>
+                        </div>
+                        <div v-else>
+                            <span>You have not played with or against {{ input.searchedName }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -31,7 +34,12 @@
 
 <script>
     import axios from 'axios';
+    import MainNavbar from "../navbar/MainNavbar";
+
     export default {
+        components: {
+            MainNavbar
+        },
         data () {
             return {
                 input: {

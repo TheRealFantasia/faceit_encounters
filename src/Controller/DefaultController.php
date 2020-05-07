@@ -9,7 +9,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController extends AbstractController
 {
     /**
-     * @Route("/", name="vue")
+     * @Route(
+     *     "/",
+     *     name="vue",
+     *     options = { "expose" = true },
+     * )
      */
     public function index()
     {

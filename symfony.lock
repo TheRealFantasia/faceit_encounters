@@ -75,6 +75,18 @@
     "doctrine/reflection": {
         "version": "1.2.1"
     },
+    "friendsofsymfony/jsrouting-bundle": {
+        "version": "2.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "2.3",
+            "ref": "a9f2e49180f75cdc71ae279a929c4b2e0638de84"
+        },
+        "files": [
+            "./config/routes/fos_js_routing.yaml"
+        ]
+    },
     "guzzlehttp/guzzle": {
         "version": "6.5.3"
     },
@@ -320,6 +332,9 @@
     "symfony/security-http": {
         "version": "v5.0.8"
     },
+    "symfony/serializer": {
+        "version": "v5.0.8"
+    },
     "symfony/service-contracts": {
         "version": "v2.0.1"
     },
@@ -396,6 +411,9 @@
     },
     "twig/twig": {
         "version": "v3.0.3"
+    },
+    "willdurand/jsonp-callback-validator": {
+        "version": "v1.1.0"
     },
     "zendframework/zend-code": {
         "version": "3.4.1"

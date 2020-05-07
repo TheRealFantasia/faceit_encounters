@@ -18,6 +18,8 @@ security:
             guard:
                 authenticators:
                     - App\Security\FaceitAuthenticator
+            logout:
+                path: app_logout
 
 
             # activate different ways to authenticate
