@@ -88,6 +88,7 @@ class FaceitAuthenticator extends SocialAuthenticator
         }
 
         $user = $user->fromFaceitUser($resourceOwner);
+        $user->setAccessToken($credentials->getToken());
         $this->repository->save($user);
 
         return $user;

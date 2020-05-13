@@ -44,13 +44,13 @@ class FaceitService
     /**
      * @param string $name
      *
-     * @return string
+     * @return array
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function fetchPlayerId(string $name): string
+    public function fetchPlayer(string $name): array
     {
         $client = HttpClient::create();
         $response = $client->request('GET', self::PLAYER_API_ENDPOINT, [
@@ -62,11 +62,11 @@ class FaceitService
 
         $json = json_decode($response->getContent(false), true);
 
-        if (isset($json['errors'])) {
-            return '';
+        if ($json === null || isset($json['errors'])) {
+            return [];
         }
 
-        return $json['player_id'];
+        return $json;
     }
 
     /**

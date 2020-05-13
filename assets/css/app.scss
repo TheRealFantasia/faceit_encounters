@@ -1,6 +1,7 @@
 @charset "utf-8";
 
 $gray: #141616;
+$midGray: #323838;
 $orange: #FF5500;
 $lightGray: #EBEFF3;
 
@@ -10,12 +11,24 @@ $primary: $orange;
 $widescreen-enabled: true;
 $fullhd-enabled: true;
 
-// Update some of Bulma's component variables
 $body-background-color: $gray;
 $control-radius: 0px;
 $title-color: $lightGray;
 $title-size: 48px;
+
+//Navbar
 $navbar-background-color: $gray;
+$navbar-dropdown-arrow: $lightGray;
+$navbar-item-color: $lightGray;
+$navbar-item-hover-color: $lightGray;
+$navbar-item-hover-background-color: $midGray;
+$navbar-dropdown-background-color: $midGray;
+$navbar-dropdown-border-top: 0px;
+$navbar-item-img-max-height: 2rem;
+
+//Card
+$card-background-color: $midGray;
+$card-color: $lightGray;
 
 // Import only what you need from Bulma
 @import "node_modules/bulma/sass/utilities/_all.sass";
@@ -25,5 +38,5 @@ $navbar-background-color: $gray;
 @import "node_modules/bulma/sass/elements/title.sass";
 @import "node_modules/bulma/sass/form/_all.sass";
 @import "node_modules/bulma/sass/components/navbar.sass";
-@import "node_modules/bulma/sass/layout/hero.sass";
-@import "node_modules/bulma/sass/layout/section.sass";
+@import "node_modules/bulma/sass/components/card.sass";
+@import "node_modules/bulma/sass/elements/image.sass";

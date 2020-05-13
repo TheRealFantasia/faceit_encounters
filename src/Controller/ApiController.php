@@ -26,7 +26,8 @@ class ApiController extends AbstractController
 
     /**
      * @Route(
-     *     "/api/search"
+     *     "/api/search",
+     *     options = { "expose" = true }
      * )
      * @param Request $request
      * @param CachedNameRepository $repository
@@ -54,12 +55,12 @@ class ApiController extends AbstractController
         }
 
         $userId = $user->getGuid();
-        $otherId = $repository->findOneBy(['name' => $otherName]); /** @var CachedName $otherId */
+        $other = $repository->findOneBy(['name' => $otherName]); /** @var CachedName $other */
 
-        if ($otherId === null) {
-            $otherId = $faceit->fetchPlayerId($otherName);
+        if ($other === null) {
+            $other = $faceit->fetchPlayer($otherName);
 
-            if ($otherId === '') {
+            if (!isset($other['player_id'])) {
                 $message = 'User \'' . $otherName . '\' was not found';
                 return new JsonResponse([
                     'success' => false,
@@ -69,8 +70,11 @@ class ApiController extends AbstractController
 
             $cached = (new CachedName())
                 ->setName($otherName)
-                ->setFaceitId($otherId);
+                ->setFaceitId($other['player_id'])
+                ->setPicture($other['avatar']);
             $repository->save($cached);
+
+            $other = $cached; /** @var CachedName $other */
         }
 
         $matches = $faceit->fetchMatches($userId);
@@ -78,7 +82,7 @@ class ApiController extends AbstractController
 
         $playedWith = false;
         foreach ($map as $player => $matches) {
-            if ($player === $otherId->getFaceitId()) {
+            if ($player === $other->getFaceitId()) {
                 $playedWith = true;
                 break;
             }
@@ -86,8 +90,8 @@ class ApiController extends AbstractController
 
         $matchesData = [];
         if ($playedWith) {
-            foreach ($map[$otherId->getFaceitId()] as $matchId) {
-                $match = $faceit->fetchMatchData($matchId, $userId, $otherId);
+            foreach ($map[$other->getFaceitId()] as $matchId) {
+                $match = $faceit->fetchMatchData($matchId, $userId, $other);
                 $matchesData[] = $match;
             }
         }
@@ -95,6 +99,7 @@ class ApiController extends AbstractController
 
         return new JsonResponse([
             'success' => true,
+            'otherPicture' => $other->getPicture(),
             'playedWith' => $playedWith,
             'matches' => $matchesData
         ]);

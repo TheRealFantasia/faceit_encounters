@@ -4,23 +4,29 @@
         <div class="container">
             <div class="columns is-centered">
                 <div class="column is-narrow">
-                    <h1 class="title">
-                        Faceit Encounters
-                    </h1>
                     <input class="input" type="text" v-model="input.faceitNickname" placeholder="Faceit Nickname" />
-                    <a class="button is-primary" v-on:click="search()">Search</a>
-                    <div v-if="isLoading">
-                        <span>Loading...</span>
-                    </div>
+                    <a class="button is-primary" v-on:click="search()" v-bind:class="{ 'is-loading': isLoading }">Search</a>
                     <div v-if="!isInitial && !isLoading">
                         <div v-if="model.playedWith">
                             <span>You played with or against {{ input.searchedName }}</span>
                             <br>
-                            <ul>
-                                <li v-for="match in model.matches">
-                                    {{ match.team1 }} vs. {{ match.team2 }}
-                                </li>
-                            </ul>
+                            <div class="card" v-for="match in model.matches">
+                                <div class="card-content">
+                                    <div class="content">
+                                        <div class="columns is-vcentered is-vertical">
+                                            <div class="column">
+                                                {{ match.winner === 'team1' ? 'W' : 'L' }} {{ match.team1 }}
+                                            </div>
+                                            <div class="column">
+                                                vs.
+                                            </div>
+                                            <div class="column">
+                                                {{ match.winner === 'team1' ? 'L' : 'W' }} {{ match.team2 }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div v-else>
                             <span>You have not played with or against {{ input.searchedName }}</span>
@@ -34,7 +40,7 @@
 
 <script>
     import axios from 'axios';
-    import MainNavbar from "../navbar/MainNavbar";
+    import MainNavbar from "../navbar/Navbar";
 
     export default {
         components: {
@@ -67,6 +73,8 @@
         },
         methods: {
             search() {
+                console.log(this.$routing.generate('app_api_searchinrecentmatches'));
+
                 let input = this.input;
                 if (input.faceitNickname === '') {
                     return;
@@ -76,7 +84,7 @@
                 this.isInitial = false;
                 this.searchedName = input.faceitNickname;
 
-                axios.get('http://localhost:8000/api/search', {
+                axios.get(this.$routing.generate('app_api_searchinrecentmatches'), {
                     params: {
                         other: input.faceitNickname
                     }

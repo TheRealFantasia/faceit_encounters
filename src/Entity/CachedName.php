@@ -26,6 +26,11 @@ class CachedName
      */
     private $faceitId;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $picture;
+
     public function getName()
     {
         return $this->name;
@@ -46,6 +51,18 @@ class CachedName
     public function setFaceitId($faceitId): self
     {
         $this->faceitId = $faceitId;
+
+        return $this;
+    }
+
+    public function getPicture()
+    {
+        return $this->picture;
+    }
+
+    public function setPicture($picture): self
+    {
+        $this->picture = $picture;
 
         return $this;
     }

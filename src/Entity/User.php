@@ -41,6 +41,11 @@ class User implements UserInterface
     private $locale;
 
     /**
+     * @ORM\Column(type="string", length=180)
+     */
+    private $accessToken;
+
+    /**
      * @ORM\Column(type="json")
      */
     private $roles = [];
@@ -165,6 +170,25 @@ class User implements UserInterface
     public function setLocale($locale)
     {
         $this->locale = $locale;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
+
+    /**
+     * @param mixed $accessToken
+     *
+     * @return User
+     */
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
         return $this;
     }
 

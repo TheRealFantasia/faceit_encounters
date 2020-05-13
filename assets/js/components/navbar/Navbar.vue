@@ -1,5 +1,10 @@
 <template>
     <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="http://127.0.0.1:8000">
+                <h1>Faceit Encounters</h1>
+            </a>
+        </div>
         <div class="navbar-menu">
             <div class="navbar-end">
                 <div class="navbar-item">
@@ -9,9 +14,21 @@
                         </a>
                     </div>
                     <div v-else>
-                        <a v-on:click="logout()" class="button is-primary" v-bind:class="{ 'is-loading': this.isLoading }">
-                            Log out
-                        </a>
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a class="navbar-link">
+                                <figure class="image is-32x32">
+                                    <img class="is-rounded" :src="this.$user.picture">
+                                </figure>
+                                <strong style="margin-left: 10px">{{ this.$user.username }}</strong>
+                            </a>
+                            <div class="navbar-dropdown has-shadow">
+                                <div class="navbar-item">
+                                    <a v-on:click="logout()" class="button is-primary is-fullwidth" v-bind:class="{ 'is-loading': this.isLoading }">
+                                        Log out
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -22,7 +39,7 @@
 <script>
     import axios from 'axios';
     export default {
-        name: "MainNavbar",
+        name: "Navbar",
         data() {
             return {
                 isLoading: false
