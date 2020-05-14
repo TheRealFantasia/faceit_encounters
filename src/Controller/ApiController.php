@@ -53,6 +53,12 @@ class ApiController extends AbstractController
         if (empty($otherName)) {
             throw new BadRequestHttpException('other cannot be empty');
         }
+        if ($otherName === $user->getUsername()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Seriously?'
+            ]);
+        }
 
         $userId = $user->getGuid();
         $other = $repository->findOneBy(['name' => $otherName]); /** @var CachedName $other */

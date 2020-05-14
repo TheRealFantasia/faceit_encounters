@@ -160,7 +160,8 @@ class FaceitService
                 if ($cachedName === null) {
                     $cachedName = (new CachedName())
                         ->setName($player['nickname'])
-                        ->setFaceitId($player['player_id']);
+                        ->setFaceitId($player['player_id'])
+                        ->setPicture($player['avatar']);
                     $this->nameRepository->save($cachedName);
                 }
 

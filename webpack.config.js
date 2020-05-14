@@ -27,6 +27,19 @@ Encore
         config.useBuiltIns = 'usage';
         config.corejs = 3;
     })
+    // .addLoader({
+    //     test: /\.(png|jpe?g|gif|svg)$/,
+    //     use: [
+    //         {
+    //             loader: 'file-loader',
+    //             options: {
+    //                 name: '[name].[contenthash].[ext]',
+    //                 outputPath: 'static/img',
+    //                 esModule: false
+    //             }
+    //         }
+    //     ]
+    // })
 ;
 
 module.exports = Encore.getWebpackConfig();

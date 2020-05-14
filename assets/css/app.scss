@@ -1,5 +1,18 @@
 @charset "utf-8";
 
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.winner {
+  color: green;
+}
+
+.loser {
+  color: red;
+}
+
 $gray: #141616;
 $midGray: #323838;
 $orange: #FF5500;
@@ -12,7 +25,12 @@ $widescreen-enabled: true;
 $fullhd-enabled: true;
 
 $body-background-color: $gray;
+
+//Form
 $control-radius: 0px;
+$input-radius: 0px;
+
+//Title
 $title-color: $lightGray;
 $title-size: 48px;
 
@@ -33,10 +51,17 @@ $card-color: $lightGray;
 // Import only what you need from Bulma
 @import "node_modules/bulma/sass/utilities/_all.sass";
 @import "node_modules/bulma/sass/base/_all.sass";
+@import "node_modules/bulma/sass/form/_all.sass";
+
 @import "node_modules/bulma/sass/elements/button.sass";
 @import "node_modules/bulma/sass/elements/container.sass";
 @import "node_modules/bulma/sass/elements/title.sass";
-@import "node_modules/bulma/sass/form/_all.sass";
+@import "node_modules/bulma/sass/elements/image.sass";
+
+@import "node_modules/bulma/sass/layout/hero.sass";
+
+@import "node_modules/bulma/sass/grid/columns.sass";
+
 @import "node_modules/bulma/sass/components/navbar.sass";
 @import "node_modules/bulma/sass/components/card.sass";
-@import "node_modules/bulma/sass/elements/image.sass";
+@import "node_modules/bulma/sass/components/modal.sass";
