@@ -14,5 +14,8 @@ new Vue({
     beforeMount() {
         Vue.prototype.$routing = Routing;
         Vue.prototype.$user = JSON.parse(this.$el.attributes['data-user'].value);
+    },
+    mounted() {
+        this.$el.setAttribute('data-user', null);
     }
 });

@@ -7,7 +7,6 @@
 </template>
 
 <script>
-    import axios from 'axios';
     import Navbar from "../navbar/Navbar";
     import LoginHero from "../login_hero/LoginHero";
     import Search from "../search/Search";

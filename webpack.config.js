@@ -1,4 +1,5 @@
-var Encore = require('@symfony/webpack-encore');
+let Encore = require('@symfony/webpack-encore');
+let JavaScriptObfuscator = require('webpack-obfuscator');
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -27,19 +28,9 @@ Encore
         config.useBuiltIns = 'usage';
         config.corejs = 3;
     })
-    // .addLoader({
-    //     test: /\.(png|jpe?g|gif|svg)$/,
-    //     use: [
-    //         {
-    //             loader: 'file-loader',
-    //             options: {
-    //                 name: '[name].[contenthash].[ext]',
-    //                 outputPath: 'static/img',
-    //                 esModule: false
-    //             }
-    //         }
-    //     ]
-    // })
+    .addPlugin(new JavaScriptObfuscator ({
+        rotateUnicodeArray: true
+    }))
 ;
 
 module.exports = Encore.getWebpackConfig();
