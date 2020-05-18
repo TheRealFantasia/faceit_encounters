@@ -36,14 +36,11 @@ class User implements UserInterface
     private $picture;
 
     /**
-     * @ORM\Column(type="string", length=3)
+     * @ORM\Column(type="string", length=3, nullable=true)
      */
     private $locale;
 
-    /**
-     * @ORM\Column(type="string", length=180)
-     */
-    private $accessToken;
+    //private $accessToken;
 
     /**
      * @ORM\Column(type="json")
@@ -173,24 +170,24 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getAccessToken()
-    {
-        return $this->accessToken;
-    }
-
-    /**
-     * @param mixed $accessToken
-     *
-     * @return User
-     */
-    public function setAccessToken($accessToken)
-    {
-        $this->accessToken = $accessToken;
-        return $this;
-    }
+//    /**
+//     * @return mixed
+//     */
+//    public function getAccessToken()
+//    {
+//        return $this->accessToken;
+//    }
+//
+//    /**
+//     * @param mixed $accessToken
+//     *
+//     * @return User
+//     */
+//    public function setAccessToken($accessToken)
+//    {
+//        $this->accessToken = $accessToken;
+//        return $this;
+//    }
 
     /**
      * @param FaceitUser $user

@@ -1,7 +1,17 @@
 <template>
     <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-menu">
+        <div class="navbar-brand">
+            <a role="button" class="navbar-burger burger" v-on:click="toggleMenu()">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div class="navbar-menu" :class="{ 'is-active': menuActive }">
             <div class="navbar-end">
+                <a class="navbar-item" v-on:click="donate()">
+                    <span class="icon" style="margin-right: 10px"><i class="fa fa-heart fa-lg"></i></span>Donate
+                </a>
                 <a href="https://github.com/TheRealFantasia/faceit_encounters" target="_blank" class="navbar-item">
                     <span class="icon" style="margin-right: 10px"><i class="fa fa-github fa-lg"></i></span>View on GitHub
                 </a>
@@ -22,6 +32,10 @@
                 </div>
             </div>
         </div>
+        <form ref="donateForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" class="is-hidden">
+            <input type="hidden" name="cmd" value="_s-xclick" />
+            <input type="hidden" name="hosted_button_id" value="D68BCC3EEUP72" />
+        </form>
     </nav>
 </template>
 
@@ -32,7 +46,8 @@
         name: "Navbar",
         data() {
             return {
-                isLoading: false
+                isLoading: false,
+                menuActive: false
             }
         },
         methods: {
@@ -44,6 +59,12 @@
                         location.reload();
                     }
                 });
+            },
+            donate() {
+                this.$refs['donateForm'].submit();
+            },
+            toggleMenu() {
+                this.menuActive = !this.menuActive;
             }
         }
     }

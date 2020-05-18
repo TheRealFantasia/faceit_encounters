@@ -8,15 +8,15 @@
                             <div class="column is-8">
                                 {{ this.match['team1'] }}
                             </div>
-                            <div class="column is-2" v-if="match.ownTeam === 'team1'">
+                            <div class="column is-2" v-if="match.userTeam === 'team1'">
                                 <figure class="image is-32x32" :title="user.username">
                                     <img v-if="user.picture" class="is-rounded" :src="user.picture" alt="own profile image">
                                     <img v-else class="is-rounded" :src="defaultImage" alt="default image">
                                 </figure>
                             </div>
-                            <div class="column is-2" v-if="match.otherTeam === 'team1'">
+                            <div class="column is-2" v-if="match.searchedTeam === 'team1'">
                                 <figure class="image is-32x32" :title="otherName">
-                                    <img v-if="otherImage" class="is-rounded" :src="otherImage" alt="other profile image">
+                                    <img v-if="searchedUser.picture" class="is-rounded" :src="searchedUser.picture" alt="other profile image">
                                     <img v-else class="is-rounded" :src="defaultImage" alt="default image">
                                 </figure>
                             </div>
@@ -39,19 +39,19 @@
                     </div>
                     <div class="column">
                         <div class="columns is-vcentered">
-                            <div class="column is-2" v-if="match.otherTeam === 'team2'" :class="{'is-offset-2': match.ownTeam === 'team1'}">
+                            <div class="column is-2" v-if="match.searchedTeam === 'team2'" :class="{'is-offset-2': match.userTeam === 'team1'}">
                                 <figure class="image is-32x32" :title="otherName">
-                                    <img v-if="otherImage" class="is-rounded" :src="otherImage" alt="other profile image">
+                                    <img v-if="searchedUser.picture" class="is-rounded" :src="searchedUser.picture" alt="other profile image">
                                     <img v-else class="is-rounded" :src="defaultImage" alt="default image">
                                 </figure>
                             </div>
-                            <div class="column is-2" v-if="match.ownTeam === 'team2'" :class="{'is-offset-2': match.otherTeam === 'team1'}">
+                            <div class="column is-2" v-if="match.userTeam === 'team2'" :class="{'is-offset-2': match.searchedTeam === 'team1'}">
                                 <figure class="image is-32x32" :title="user.username">
                                     <img v-if="user.picture" class="is-rounded" :src="user.picture" alt="own profile image">
                                     <img v-else class="is-rounded" :src="defaultImage" alt="default image">
                                 </figure>
                             </div>
-                            <div class="column is-8" v-bind:class="{'is-offset-4': (match.ownTeam === 'team1') && (match.otherTeam === 'team1')}">
+                            <div class="column is-8" v-bind:class="{'is-offset-4': (match.userTeam === 'team1') && (match.searchedTeam === 'team1')}">
                                 {{ match.team2 }}
                             </div>
                         </div>
@@ -70,12 +70,8 @@
                 type: Object,
                 required: true
             },
-            otherImage: {
-                type: String,
-                required: true
-            },
-            otherName: {
-                type: String,
+            searchedUser: {
+                type: Object,
                 required: true
             }
         },

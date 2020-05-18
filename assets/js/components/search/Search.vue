@@ -18,7 +18,7 @@
                             <div v-if="model.success">
                                 <div v-if="model.playedWith">
                                     <div v-for="match in model.matches">
-                                        <MatchCard :match="match" :other-image="model.otherPicture" :other-name="input.searchedName"></MatchCard>
+                                        <MatchCard :match="match" :searched-user="model.searchedUser" :other-name="input.searchedName"></MatchCard>
                                     </div>
                                 </div>
                                 <div v-else>
@@ -56,11 +56,11 @@
                 isLoading: false,
                 isNicknameEmpty: false,
                 model: {
-                    otherPicture: '',
+                    searchedUser: {},
                     playedWith: false,
                     matches: [{
-                        otherTeam: '',
-                        ownTeam: '',
+                        searchedTeam: '',
+                        userTeam: '',
                         team1: '',
                         team2: '',
                         url: '',
@@ -86,7 +86,7 @@
 
                 axios.get(this.$routing.generate('app_api_searchinrecentmatches'), {
                     params: {
-                        other: input.faceitNickname
+                        nickname: input.faceitNickname
                     }
                 }).then(res => {
                     this.model = res.data;

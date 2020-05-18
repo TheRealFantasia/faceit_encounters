@@ -2,11 +2,10 @@
 
 namespace App\Business;
 
-use App\Entity\CachedMatch;
-use App\Entity\CachedName;
+use App\Entity\SearchedMatch;
 use App\Entity\User;
-use App\Repository\CachedMatchRepository;
-use App\Repository\CachedNameRepository;
+use App\Repository\SearchedMatchRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Symfony\Component\HttpClient\HttpClient;
@@ -26,19 +25,121 @@ class FaceitService
      */
     private $apiKey;
     /**
-     * @var CachedMatchRepository
+     * @var SearchedMatchRepository
      */
     private $matchRepository;
     /**
-     * @var CachedNameRepository
+     * @var UserRepository
      */
-    private $nameRepository;
+    private $userRepository;
 
-    public function __construct(string $apiKey, CachedMatchRepository $matchRepository, CachedNameRepository $nameRepository)
-    {
+    public function __construct(
+        string $apiKey,
+        SearchedMatchRepository $matchRepository,
+        UserRepository $userRepository
+    ) {
         $this->apiKey = $apiKey;
         $this->matchRepository = $matchRepository;
-        $this->nameRepository = $nameRepository;
+        $this->userRepository = $userRepository;
+    }
+
+    /**
+     * @param string $nickname
+     *
+     * @return User
+     * @throws ClientExceptionInterface
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getPlayerByNickname(string $nickname): ?User
+    {
+        $player = $this->userRepository->findOneBy(['username' => $nickname]);
+
+        if ($player === null || $player->getId() === null) {
+            $newPlayer = $this->fetchPlayer($nickname);
+
+            if (!isset($newPlayer['player_id'])) {
+                return null;
+            }
+
+            $newUser = (new User())
+                ->setUsername($nickname)
+                ->setGuid($newPlayer['player_id'])
+                ->setPicture($newPlayer['avatar']);
+            $this->userRepository->save($newUser);
+
+            return $newUser;
+        }
+        return $player;
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getPlayerMatchMap(User $user): array
+    {
+        $matches = $this->fetchMatches($user->getGuid());
+
+        $players = [];
+        foreach ($matches as $match) {
+            $matchPlayers = $match['playing_players'];
+
+            foreach ($matchPlayers as $player) {
+                if ($player !== $user->getGuid()) {
+                    $players[$player][] = $match['match_id'];
+                }
+            }
+        }
+
+        return $players;
+    }
+
+    /**
+     * @param array $mappedMatches
+     * @param User $user
+     *
+     * @return bool
+     */
+    public function hasPlayedWith(array $mappedMatches, User $user)
+    {
+        foreach ($mappedMatches as $player => $matches) {
+            if ($player === $user->getGuid()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param array $mappedMatches
+     * @param User $user
+     * @param User $searchedUser
+     *
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getMatchesData(array $mappedMatches, User $user, User $searchedUser)
+    {
+        $matchesData = [];
+        foreach ($mappedMatches[$searchedUser->getGuid()] as $matchId) {
+            $match = $this->fetchMatchData($matchId, $user, $searchedUser);
+            $matchesData[] = $match;
+        }
+        return array_filter($matchesData);
     }
 
     /**
@@ -50,7 +151,7 @@ class FaceitService
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function fetchPlayer(string $name): array
+    private function fetchPlayer(string $name): array
     {
         $client = HttpClient::create();
         $response = $client->request('GET', self::PLAYER_API_ENDPOINT, [
@@ -78,7 +179,7 @@ class FaceitService
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function fetchMatches(string $player_id): array
+    private function fetchMatches(string $player_id): array
     {
         $client = HttpClient::create();
         $response = $client->request('GET', sprintf(self::MATCHES_API_ENDPOINT, $player_id), [
@@ -95,32 +196,11 @@ class FaceitService
         return $json['items'];
     }
 
-    /**
-     * @param array $matches
-     * @param string $ownId
-     *
-     * @return array
-     */
-    public function getPlayerMatchMap(array $matches, string $ownId): array
-    {
-        $players = [];
-        foreach ($matches as $match) {
-            $matchPlayers = $match['playing_players'];
-
-            foreach ($matchPlayers as $player) {
-                if ($player !== $ownId) {
-                    $players[$player][] = $match['match_id'];
-                }
-            }
-        }
-
-        return $players;
-    }
 
     /**
      * @param string $matchId
-     * @param string $own
-     * @param CachedName $other
+     * @param User $user
+     * @param User $searchedUser
      *
      * @return array
      * @throws ClientExceptionInterface
@@ -130,9 +210,9 @@ class FaceitService
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function fetchMatchData(string $matchId, string $own, CachedName $other): ?array
+    private function fetchMatchData(string $matchId, User $user, User $searchedUser): ?array
     {
-        /** @var CachedMatch $match */
+        /** @var SearchedMatch $match */
         $match = $this->matchRepository->findOneBy(['guid' => $matchId]);
 
         if ($match === null) {
@@ -147,7 +227,7 @@ class FaceitService
                 return null;
             }
 
-            $match = (new CachedMatch())
+            $match = (new SearchedMatch())
                 ->setGuid($matchId)
                 ->setTeam1($json['teams']['faction1']['name'])
                 ->setTeam2($json['teams']['faction2']['name'])
@@ -155,22 +235,22 @@ class FaceitService
                 ->setUrl(str_replace('{lang}', 'en', $json['faceit_url']));
 
             foreach ($json['teams']['faction1']['roster'] as $player) {
-                $cachedName = $this->nameRepository->findOneBy(['faceitId' => $player['player_id']]);
+                $matchPlayer = $this->userRepository->findOneBy(['guid' => $player['player_id']]);
 
-                if ($cachedName === null) {
-                    $cachedName = (new CachedName())
-                        ->setName($player['nickname'])
-                        ->setFaceitId($player['player_id'])
+                if ($matchPlayer === null) {
+                    $matchPlayer = (new User())
+                        ->setUsername($player['nickname'])
+                        ->setGuid($player['player_id'])
                         ->setPicture($player['avatar']);
-                    $this->nameRepository->save($cachedName);
+                    $this->userRepository->save($matchPlayer);
                 }
 
-                $match->addPlayer($cachedName);
+                $match->addPlayer($matchPlayer);
             }
 
             $this->matchRepository->save($match);
         }
 
-        return $match->toArray($own, $other);
+        return $match->toArray($user, $searchedUser);
     }
 }

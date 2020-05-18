@@ -3,16 +3,15 @@
 namespace App\Controller;
 
 use App\Business\FaceitService;
-use App\Entity\CachedName;
 use App\Entity\User;
-use App\Repository\CachedNameRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use JMS\Serializer\Serializer;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -30,84 +29,55 @@ class ApiController extends AbstractController
      *     options = { "expose" = true }
      * )
      * @param Request $request
-     * @param CachedNameRepository $repository
+     * @param SerializerInterface $serializer
      * @param FaceitService $faceit
      *
      * @return JsonResponse
      * @throws ClientExceptionInterface
+     * @throws ORMException
+     * @throws OptimisticLockException
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function searchInRecentMatches(
         Request $request,
-        CachedNameRepository $repository,
+        SerializerInterface $serializer,
         FaceitService $faceit
-    ): JsonResponse {
+    ): Response {
         /** @var User $user */
         $user = $this->getUser();
 
-        $otherName = $request->get('other');
-        if (empty($otherName)) {
-            throw new BadRequestHttpException('other cannot be empty');
+        $searchedName = $request->get('nickname');
+        if (empty($searchedName)) {
+            throw new BadRequestHttpException('searchedName cannot be empty');
         }
-        if ($otherName === $user->getUsername()) {
+        if ($searchedName === $user->getUsername()) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'Seriously?'
             ]);
         }
 
-        $userId = $user->getGuid();
-        $other = $repository->findOneBy(['name' => $otherName]); /** @var CachedName $other */
+        $searchedUser = $faceit->getPlayerByNickname($searchedName);
 
-        if ($other === null) {
-            $other = $faceit->fetchPlayer($otherName);
-
-            if (!isset($other['player_id'])) {
-                $message = 'User \'' . $otherName . '\' was not found';
-                return new JsonResponse([
-                    'success' => false,
-                    'message' => $message
-                ]);
-            }
-
-            $cached = (new CachedName())
-                ->setName($otherName)
-                ->setFaceitId($other['player_id'])
-                ->setPicture($other['avatar']);
-            $repository->save($cached);
-
-            $other = $cached; /** @var CachedName $other */
+        if ($searchedUser === null) {
+            $message = 'User \'' . $searchedName . '\' was not found';
+            return new JsonResponse([
+                'success' => false,
+                'message' => $message
+            ]);
         }
 
-        $matches = $faceit->fetchMatches($userId);
-        $map = $faceit->getPlayerMatchMap($matches, $userId);
+        $map = $faceit->getPlayerMatchMap($user);
+        $playedWith = $faceit->hasPlayedWith($map, $searchedUser);
+        $matchesData = $playedWith ? $faceit->getMatchesData($map, $user, $searchedUser) : [];
 
-        $playedWith = false;
-        foreach ($map as $player => $matches) {
-            if ($player === $other->getFaceitId()) {
-                $playedWith = true;
-                break;
-            }
-        }
-
-        $matchesData = [];
-        if ($playedWith) {
-            foreach ($map[$other->getFaceitId()] as $matchId) {
-                $match = $faceit->fetchMatchData($matchId, $userId, $other);
-                $matchesData[] = $match;
-            }
-        }
-        $matchesData = array_filter($matchesData);
-
-        return new JsonResponse([
+        return new Response($serializer->serialize([
             'success' => true,
-            'otherPicture' => $other->getPicture(),
+            'searchedUser' => $searchedUser,
             'playedWith' => $playedWith,
             'matches' => $matchesData
-        ]);
+        ], 'json'));
     }
 }

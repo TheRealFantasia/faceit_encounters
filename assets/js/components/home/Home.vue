@@ -1,8 +1,8 @@
 <template>
     <div>
-        <Navbar></Navbar>
-        <LoginHero v-if="!this.$user.username"></LoginHero>
-        <Search v-else></Search>
+        <Navbar/>
+        <LoginHero v-if="!this.$user.username"/>
+        <Search v-else/>
     </div>
 </template>
 
@@ -10,12 +10,14 @@
     import Navbar from "../navbar/Navbar";
     import LoginHero from "../login_hero/LoginHero";
     import Search from "../search/Search";
+    import AllPlayers from "../all_players/AllPlayers";
 
     export default {
         components: {
             Navbar,
             LoginHero,
-            Search
+            Search,
+            AllPlayers
         },
         name: "Home"
     }

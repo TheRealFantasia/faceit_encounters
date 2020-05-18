@@ -6,9 +6,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\CachedMatchRepository")
+ * @ORM\Entity(repositoryClass="SearchedMatchRepository")
  */
-class CachedMatch
+class SearchedMatch
 {
     /**
      * @ORM\Id
@@ -43,7 +43,7 @@ class CachedMatch
     private $url;
 
     /**
-     * @ORM\ManyToMany(targetEntity="CachedName")
+     * @ORM\ManyToMany(targetEntity="User")
      * @ORM\JoinTable(name="match_players",
      *      joinColumns={@ORM\JoinColumn(name="match_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="player_id", referencedColumnName="id")}
@@ -75,7 +75,7 @@ class CachedMatch
     /**
      * @param mixed $guid
      *
-     * @return CachedMatch
+     * @return SearchedMatch
      */
     public function setGuid($guid)
     {
@@ -94,7 +94,7 @@ class CachedMatch
     /**
      * @param mixed $team1
      *
-     * @return CachedMatch
+     * @return SearchedMatch
      */
     public function setTeam1($team1)
     {
@@ -113,7 +113,7 @@ class CachedMatch
     /**
      * @param mixed $team2
      *
-     * @return CachedMatch
+     * @return SearchedMatch
      */
     public function setTeam2($team2)
     {
@@ -132,7 +132,7 @@ class CachedMatch
     /**
      * @param mixed $winner
      *
-     * @return CachedMatch
+     * @return SearchedMatch
      */
     public function setWinner($winner)
     {
@@ -151,7 +151,7 @@ class CachedMatch
     /**
      * @param mixed $url
      *
-     * @return CachedMatch
+     * @return SearchedMatch
      */
     public function setUrl($url)
     {
@@ -160,9 +160,9 @@ class CachedMatch
     }
 
     /**
-     * @param CachedName $player
+     * @param User $player
      */
-    public function addPlayer(CachedName $player)
+    public function addPlayer(User $player)
     {
         if ($this->team1Roster->contains($player)) {
             return;
@@ -172,9 +172,9 @@ class CachedMatch
     }
 
     /**
-     * @param CachedName $player
+     * @param User $player
      */
-    public function removePlayer(CachedName $player)
+    public function removePlayer(User $player)
     {
         if (!$this->team1Roster->contains($player)) {
             return;
@@ -184,17 +184,17 @@ class CachedMatch
     }
 
     /**
-     * @param string $own
-     * @param CachedName $other
+     * @param User $user
+     * @param User $searchedUser
      *
      * @return array
      */
-    public function toArray(string $own, CachedName $other): array
+    public function toArray(User $user, User $searchedUser): array
     {
         $isOnTeam1 = false;
         foreach ($this->team1Roster->getValues() as $player) {
-            /** @var CachedName $player */
-            if ($player->getFaceitId() === $own) {
+            /** @var User $player */
+            if ($player->getGuid() === $user->getGuid()) {
                 $isOnTeam1 = true;
                 break;
             }
@@ -204,8 +204,8 @@ class CachedMatch
             'team1' => $this->team1,
             'team2' => $this->team2,
             'winner' => $this->winner,
-            'ownTeam' => $isOnTeam1 ? 'team1' : 'team2',
-            'otherTeam' => $this->team1Roster->contains($other) ? 'team1' : 'team2',
+            'userTeam' => $isOnTeam1 ? 'team1' : 'team2',
+            'searchedTeam' => $this->team1Roster->contains($searchedUser) ? 'team1' : 'team2',
             'url' => $this->url
         ];
     }
