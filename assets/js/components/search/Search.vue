@@ -15,7 +15,7 @@
                 <div class="columns" v-if="!isInitial && !isLoading">
                     <div class="column is-10 is-offset-1">
                         <div class="container">
-                            <div v-if="model.success">
+                            <div v-if="model.success && !hasError">
                                 <div v-if="model.playedWith">
                                     <div v-for="match in model.matches">
                                         <MatchCard :match="match" :searched-user="model.searchedUser" :other-name="input.searchedName"></MatchCard>
@@ -24,6 +24,9 @@
                                 <div v-else>
                                     <span>You have not encountered {{ input.searchedName }}</span>
                                 </div>
+                            </div>
+                            <div v-else-if="hasError">
+                                <span>An unknown error occurred</span>
                             </div>
                             <div v-else>
                                 <span>{{ model.message }}</span>
@@ -55,6 +58,7 @@
                 isInitial: true,
                 isLoading: false,
                 isNicknameEmpty: false,
+                hasError: false,
                 model: {
                     searchedUser: {},
                     playedWith: false,
@@ -82,6 +86,7 @@
 
                 this.isLoading = true;
                 this.isInitial = false;
+                this.hasError = false;
                 input.searchedName = input.faceitNickname;
 
                 axios.get(this.$routing.generate('app_api_searchinrecentmatches'), {
@@ -90,6 +95,9 @@
                     }
                 }).then(res => {
                     this.model = res.data;
+                    this.isLoading = false;
+                }).catch(error => {
+                    this.hasError = true;
                     this.isLoading = false;
                 });
             }
