@@ -6,6 +6,8 @@ use App\Entity\User;
 use App\Provider\FaceitUser;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2Client;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
@@ -72,8 +74,8 @@ class FaceitAuthenticator extends SocialAuthenticator
      * @param UserProviderInterface $userProvider
      *
      * @return UserInterface|null
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
@@ -88,7 +90,6 @@ class FaceitAuthenticator extends SocialAuthenticator
         }
 
         $user = $user->fromFaceitUser($resourceOwner);
-        $user->setAccessToken($credentials->getToken());
         $this->repository->save($user);
 
         return $user;
