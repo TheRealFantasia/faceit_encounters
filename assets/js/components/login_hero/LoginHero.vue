@@ -9,7 +9,7 @@
                     Find out if you have recently encountered a specific player on Faceit
                 </h2>
                 <a v-on:click="login()" class="button is-primary">
-                    Log in
+                    Log in with Faceit
                 </a>
             </div>
         </div>
