@@ -75,6 +75,9 @@
     "doctrine/reflection": {
         "version": "1.2.1"
     },
+    "easycorp/easy-deploy-bundle": {
+        "version": "v1.0.6"
+    },
     "friendsofsymfony/jsrouting-bundle": {
         "version": "2.3",
         "recipe": {
@@ -282,6 +285,9 @@
     "symfony/event-dispatcher-contracts": {
         "version": "v2.0.1"
     },
+    "symfony/expression-language": {
+        "version": "v5.0.8"
+    },
     "symfony/filesystem": {
         "version": "v5.0.8"
     },
@@ -358,6 +364,9 @@
     },
     "symfony/polyfill-php73": {
         "version": "v1.15.0"
+    },
+    "symfony/process": {
+        "version": "v5.0.8"
     },
     "symfony/profiler-pack": {
         "version": "v1.0.4"
