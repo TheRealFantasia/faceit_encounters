@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Provider\FaceitUser;
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -40,16 +39,6 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=3, nullable=true)
      */
     private $locale;
-
-    /**
-     * @OMR\ManyToMany(targetEntity="SearchedMatch", mappedBy="team1Roster")
-     */
-    private $matches;
-
-    public function __construct()
-    {
-        $this->matches = new ArrayCollection();
-    }
 
     //private $accessToken;
 
@@ -199,30 +188,6 @@ class User implements UserInterface
 //        $this->accessToken = $accessToken;
 //        return $this;
 //    }
-
-    /**
-     * @param SearchedMatch $match
-     */
-    public function addMatch(SearchedMatch $match)
-    {
-        if ($this->matches->contains($match)) {
-            return;
-        }
-
-        $this->matches->add($match);
-    }
-
-    /**
-     * @param SearchedMatch $match
-     */
-    public function removeMatch(SearchedMatch $match)
-    {
-        if (!$this->matches->contains($match)) {
-            return;
-        }
-
-        $this->matches->removeElement($match);
-    }
 
     /**
      * @param FaceitUser $user

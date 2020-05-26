@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\SearchedMatchRepository")
+ * @ORM\Entity(repositoryClass="SearchedMatchRepository")
  */
 class SearchedMatch
 {
@@ -43,8 +43,11 @@ class SearchedMatch
     private $url;
 
     /**
-     * @ORM\ManyToMany(targetEntity="User", inversedBy="matches")
-     * @ORm\JoinTable(name="matches_players")
+     * @ORM\ManyToMany(targetEntity="User")
+     * @ORM\JoinTable(name="match_players",
+     *      joinColumns={@ORM\JoinColumn(name="match_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="player_id", referencedColumnName="id")}
+     * )
      */
     private $team1Roster;
 
