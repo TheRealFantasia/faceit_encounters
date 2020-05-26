@@ -34,14 +34,22 @@ return new class extends DefaultDeployer
 
     public function beforePreparing()
     {
-        $this->log('<h3>Copying over the .env files</>');
+        $this->log('<h3>Copying over the .env file</h3>');
         $this->runRemote('cp {{ deploy_dir }}/env/.env {{ project_dir }}/.env');
     }
 
     public function beforeFinishingDeploy()
     {
-        $this->runRemote('{{ console_bin }} doctrine:migrations:diff')[0]->getOutput();
-        $this->runRemote('{{ console_bin }} doctrine:migrations:migrate');
-        $this->runRemote('cd {{ project_dir }} && yarn install');
+        $this->log('<h3>Checking Migrations</h3>');
+        $upToDate = $this->runRemote('{{ console_bin }} doctrine:migrations:up-to-date')[0]->getOutput();
+        $this->log($upToDate);
+        if (strpos($upToDate, 'Up-to-date') === false) {
+            $this->runRemote('{{ console_bin }} doctrine:migrations:diff');
+            $this->runRemote('{{ console_bin }} doctrine:migrations:migrate');
+        }
+
+        $this->log('Vue prod build');
+        $this->runRemote('yarn install');
+        $this->runRemote('yarn build');
     }
 };
