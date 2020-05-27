@@ -34,13 +34,16 @@ return new class extends DefaultDeployer
 
     public function beforePreparing()
     {
-        $this->log('<h3>Copying over the .env file</h3>');
+        $this->log('Copying over the .env file');
         $this->runRemote('cp {{ deploy_dir }}/env/.env {{ project_dir }}/.env');
     }
 
     public function beforeFinishingDeploy()
     {
-        $this->log('<h3>Checking Migrations</h3>');
+        $this->log('Setting rights for jms cache');
+        $this->runRemote('chmod -R 777 {{ project_dir }}/var/cache/prod/jms_serializer/');
+
+        $this->log('Checking Migrations');
         $upToDate = $this->runRemote('{{ console_bin }} doctrine:migrations:up-to-date')[0]->getOutput();
         $this->log($upToDate);
         if (strpos($upToDate, 'Up-to-date') === false) {

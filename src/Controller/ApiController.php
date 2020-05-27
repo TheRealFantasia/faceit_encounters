@@ -48,6 +48,12 @@ class ApiController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        if ($user === null) {
+            return $this->render('index/index.html.twig', [
+                'user' => []
+            ]);
+        }
+
         $searchedName = $request->get('nickname');
         if (empty($searchedName)) {
             throw new BadRequestHttpException('searchedName cannot be empty');
